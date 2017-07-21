@@ -21,9 +21,9 @@ from tempest.lib import exceptions as lib_exc
 from oswin_tempest_plugin.clients import wsman
 from oswin_tempest_plugin import config
 from oswin_tempest_plugin import exceptions
-from oswin_tempest_plugin.tests import test_base
 from oswin_tempest_plugin.tests._mixins import migrate
 from oswin_tempest_plugin.tests._mixins import resize
+from oswin_tempest_plugin.tests import test_base
 
 CONF = config.CONF
 LOG = logging.getLogger(__name__)
@@ -31,6 +31,7 @@ LOG = logging.getLogger(__name__)
 
 class HyperVClusterTest(test_base.TestBase,
                         migrate._MigrateMixin,
+                        migrate._LiveMigrateMixin,
                         resize._ResizeMixin):
 
     """The test suite for the Hyper-V Cluster.
@@ -133,11 +134,6 @@ class HyperVClusterTest(test_base.TestBase,
             raise exceptions.NotFoundException(resource=hostname,
                                                res_type='hypervisor')
         return hypervisor[0]
-
-    def _get_server_as_admin(self, server):
-        # only admins have access to certain instance properties.
-        return self.admin_servers_client.show_server(
-            server['id'])['server']
 
     def _create_server(self):
         server_tuple = super(HyperVClusterTest, self)._create_server()
